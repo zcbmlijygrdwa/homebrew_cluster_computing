@@ -51,7 +51,8 @@ class Slave
             socklen_t len;
             void * loaded_result_ptr = (void *) calloc(1,sizeof(T_Result));
             memcpy(loaded_result_ptr, &result,sizeof(T_Result));
-            sendto(sockfd, (const void *)loaded_result_ptr, sizeof(T_Result), MSG_CONFIRM, (const struct sockaddr *) &from_addr, sizeof(from_addr));
+            int send_result = sendto(sockfd, (const void *)loaded_result_ptr, sizeof(T_Result), MSG_CONFIRM, (const struct sockaddr *) &from_addr, sizeof(from_addr));
+            std::cout<<"send_result = "<<send_result<<std::endl;
             delete(loaded_result_ptr);
         }
 };
