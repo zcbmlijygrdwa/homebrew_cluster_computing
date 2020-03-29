@@ -1,12 +1,6 @@
 #include <iostream>
-
-#include <arpa/inet.h>
-#include <sys/socket.h>
-
-#include <string.h>
-
-#include "include/message_types.hpp"
-#include "include/slave.hpp"
+#include "message_types.hpp"
+#include "slave.hpp"
 
 int main(int argc, char** argv)
 {

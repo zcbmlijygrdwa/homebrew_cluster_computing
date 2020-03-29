@@ -1,15 +1,17 @@
 #ifndef SLAVE_HPP
 #define SLAVE_HPP
 
-#include <string>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
+#include <string.h>
+#include <iostream>
 #include <sstream>
+
+#include "message_types.hpp"
 
 #define SERVICE_PORT 8080
 #define MAXLINE 1024
-
-
-#include <sys/socket.h>
-
 
 class Slave 
 {
@@ -19,37 +21,13 @@ class Slave
     //udp
     int sockfd;
     public:
-    Slave()
-    {
-        // create a socket
-        if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
-            perror("socket creation failed");
-            exit(EXIT_FAILURE);
-        }
+    Slave();
 
-        //set up my_addr
-        memset((char*)&my_addr, 0, sizeof(my_addr));
-        my_addr.sin_family = AF_INET;
-        my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        my_addr.sin_port = htons(SERVICE_PORT);
-
-        //bind to all local addresses
-        if ( bind(sockfd, (const struct sockaddr *)&my_addr, sizeof(my_addr)) < 0 )
-        {
-            perror("bind failed");
-            exit(EXIT_FAILURE);
-        }
-    }
-
-    ~Slave()
-    {
-        close(sockfd);
-        std::cout<<"Slave socket shutdown."<<std::endl;
-    }
+    virtual  ~Slave();
 
     template<class T_Computable>
         T_Computable waitForComputable()
-        {
+        {    
             char buffer[MAXLINE];
             socklen_t len;
             std::cout<<"Start waiting for receiving computable from master..."<<std::endl;

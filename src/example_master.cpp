@@ -1,15 +1,6 @@
 #include <iostream>
-
-#include <arpa/inet.h>
-#include <sys/socket.h>
-
-#include <string.h>
-
-#include "include/message_types.hpp"
-#include "include/master.hpp"
-
-#define PORT     8080
-#define MAXLINE 1024
+#include "message_types.hpp"
+#include "master.hpp"
 
 int main(int argc, char** argv)
 {
