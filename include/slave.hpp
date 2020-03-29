@@ -37,7 +37,7 @@ class Slave
                     &len);
             std::cout<<"Slave received computable from master!"<<std::endl;
 
-            Computable computable;
+            T_Computable computable;
             void * computable_ptr = buffer;
             computable = *((T_Computable*)computable_ptr);
 
