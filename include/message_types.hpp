@@ -33,7 +33,7 @@ class Computable
             {
                 std::cout<<"Compute stage["<<(i+1)<<"]"<<std::endl;
                 result.c = a + 100*b;
-                sleep(3);   //simulate slow computation
+                sleep(1);   //simulate slow computation
             }
             return result;
         }

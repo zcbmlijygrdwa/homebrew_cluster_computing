@@ -10,16 +10,11 @@
 #include "include/message_types.hpp"
 #include "include/slave.hpp"
 
-
-#define PORT     8080
-#define MAXLINE 1024
-
 int main(int argc, char** argv)
 {
     std::cout<<"This is a example of slave."<<std::endl;
 
-    int slave_id = 0;
-    Slave slave("0.0.0.0", slave_id);
+    Slave slave;
     Computable computable = slave.waitForComputable<Computable>();
     printv(computable.str());
 

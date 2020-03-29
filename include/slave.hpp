@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 
-#define PORT     8080
+#define SERVICE_PORT 8080
 #define MAXLINE 1024
 
 
@@ -13,62 +13,54 @@
 
 class Slave 
 {
-    std::string ip;
-    int slave_id;
+    struct sockaddr_in my_addr;
+    struct sockaddr_in from_addr; // address used to receive/send message from/to master
 
     //udp
     int sockfd;
     public:
-    Slave(std::string ip_in, int slave_id_in)
+    Slave()
     {
-        ip = ip_in;
-        slave_id = slave_id_in;
+        // create a socket
+        if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
+            perror("socket creation failed");
+            exit(EXIT_FAILURE);
+        }
+
+        //set up my_addr
+        memset((char*)&my_addr, 0, sizeof(my_addr));
+        my_addr.sin_family = AF_INET;
+        my_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+        my_addr.sin_port = htons(SERVICE_PORT);
+
+        //bind to all local addresses
+        if ( bind(sockfd, (const struct sockaddr *)&my_addr, sizeof(my_addr)) < 0 )
+        {
+            perror("bind failed");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    ~Slave()
+    {
+        close(sockfd);
+        std::cout<<"Slave socket shutdown."<<std::endl;
     }
 
     template<class T_Computable>
         T_Computable waitForComputable()
         {
-            // setup udp
-            int sockfd;
             char buffer[MAXLINE];
-            struct sockaddr_in servaddr, cliaddr;
-
-            // Creating socket file descriptor
-            if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
-                perror("socket creation failed");
-                exit(EXIT_FAILURE);
-            }
-
-            memset(&servaddr, 0, sizeof(servaddr));
-            memset(&cliaddr, 0, sizeof(cliaddr));
-
-            // Filling server information
-            servaddr.sin_family = AF_INET;
-            servaddr.sin_port = htons(PORT);
-            servaddr.sin_addr.s_addr = INADDR_ANY;
-
             socklen_t len;
-
-            // Bind the socket with the server address
-            if ( bind(sockfd, (const struct sockaddr *)&servaddr,
-                        sizeof(servaddr)) < 0 )
-            {
-                perror("bind failed");
-                exit(EXIT_FAILURE);
-            }
-
-            printv(sizeof(Computable));
-
-            std::cout<<"Start waiting for receiving result from slave..."<<std::endl;
+            std::cout<<"Start waiting for receiving computable from master..."<<std::endl;
+            printf("waiting on port %d\n", SERVICE_PORT);
             int n = recvfrom(sockfd, (void *)buffer, MAXLINE,
-                    MSG_WAITALL, ( struct sockaddr *) &cliaddr,
+                    MSG_WAITALL, ( struct sockaddr *) &from_addr,
                     &len);
-            std::cout<<"Slave result received!"<<std::endl;
+            std::cout<<"Slave received computable from master!"<<std::endl;
 
             Computable computable;
             void * computable_ptr = buffer;
-            //printf("Client : %s\n", buffer);
-            //std::cout<<"Client sent data:"<<std::endl;
             computable = *((T_Computable*)computable_ptr);
 
             return computable;
@@ -77,30 +69,11 @@ class Slave
     template<class T_Result>
         void sendResult(T_Result result)
         {
-            // setup udp
             char buffer[MAXLINE];
-            struct sockaddr_in   servaddr;
-
-            // Creating socket file descriptor
-            if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
-                perror("socket creation failed");
-                exit(EXIT_FAILURE);
-            }
-
-            memset(&servaddr, 0, sizeof(servaddr));
-
-            // Filling server information
-            servaddr.sin_family = AF_INET;
-            servaddr.sin_port = htons(8081);
-            servaddr.sin_addr.s_addr = INADDR_ANY;
-
             socklen_t len;
-
             void * loaded_result_ptr = (void *) calloc(1,sizeof(T_Result));
-
             memcpy(loaded_result_ptr, &result,sizeof(T_Result));
-
-            sendto(sockfd, (const void *)loaded_result_ptr, sizeof(T_Result), MSG_CONFIRM, (const struct sockaddr *) &servaddr, sizeof(servaddr));
+            sendto(sockfd, (const void *)loaded_result_ptr, sizeof(T_Result), MSG_CONFIRM, (const struct sockaddr *) &from_addr, sizeof(from_addr));
             delete(loaded_result_ptr);
         }
 };

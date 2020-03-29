@@ -57,6 +57,12 @@ class Master
         }
     }
 
+    ~Master()
+    {
+        close(sockfd);
+        std::cout<<"Master socket shutdown."<<std::endl;
+    }
+
     template<class T_Computable>
         void sendData(T_Computable computable)
         {
