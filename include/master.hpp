@@ -50,7 +50,7 @@ class Master
                     MSG_WAITALL, ( struct sockaddr *) &to_addr,
                     &len);
             std::cout<<"Master result received!"<<std::endl;
-            Result result;
+            T_Result result;
             void * result_ptr = buffer;
             result = *((T_Result*)result_ptr);
 
