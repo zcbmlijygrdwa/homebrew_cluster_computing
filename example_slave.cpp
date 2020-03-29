@@ -15,17 +15,20 @@ int main(int argc, char** argv)
     std::cout<<"This is a example of slave."<<std::endl;
 
     Slave slave;
-    Computable computable = slave.waitForComputable<Computable>();
-    printv(computable.str());
+    while(true)
+    {
+        Computable computable = slave.waitForComputable<Computable>();
+        printv(computable.str());
 
-    //perform the calculation
-    Result result = computable.compute();
-    std::cout<<"Computation done, result: "<<result.str()<<std::endl;
+        //perform the calculation
+        Result result = computable.compute();
+        std::cout<<"Computation done, result: "<<result.str()<<std::endl;
 
-    //send the result back to master
-    slave.sendResult(result);
+        //send the result back to master
+        slave.sendResult(result);
 
-    std::cout<<"Result sent out."<<std::endl;
+        std::cout<<"Result sent out."<<std::endl;
+    }
 
     return 0;
 }
