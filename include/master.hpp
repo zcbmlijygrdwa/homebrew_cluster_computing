@@ -89,7 +89,7 @@ class Master
             void * result_ptr = buffer;
             result = *((T_Result*)result_ptr);
 
-            printv(result.c);
+            std::cout<<"result: "<<result.str()<<std::endl;
 
             return result;
         }

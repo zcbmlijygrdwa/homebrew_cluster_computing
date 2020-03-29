@@ -5,8 +5,6 @@
 
 #include <string.h>
 
-#include "../smt/OAPI-Bot/linux_curl/cpp_program/include/test.hpp"
-
 #include "include/message_types.hpp"
 #include "include/master.hpp"
 
@@ -22,7 +20,7 @@ int main(int argc, char** argv)
     computable.b = 1;
 
     int master_id = 0;
-    Master master("127.0.0.1", master_id);
+    Master master("10.0.0.129", master_id);
     master.sendData<Computable>(computable);
     Result result = master.waitForResult<Result>();
 

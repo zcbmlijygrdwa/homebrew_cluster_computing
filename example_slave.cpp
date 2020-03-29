@@ -5,8 +5,6 @@
 
 #include <string.h>
 
-#include "../smt/OAPI-Bot/linux_curl/cpp_program/include/test.hpp"
-
 #include "include/message_types.hpp"
 #include "include/slave.hpp"
 
@@ -18,7 +16,7 @@ int main(int argc, char** argv)
     while(true)
     {
         Computable computable = slave.waitForComputable<Computable>();
-        printv(computable.str());
+        std::cout<<"slave got computable: "<<computable.str()<<std::endl;
 
         //perform the calculation
         Result result = computable.compute();
