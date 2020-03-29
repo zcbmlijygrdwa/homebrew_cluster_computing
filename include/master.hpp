@@ -13,15 +13,15 @@
 
 class Master 
 {
-    std::string ip;
+    std::string slave_ip;
     int slave_id;
             
             //udp
             int sockfd;
     public:
-    Master(std::string ip_in, int slave_id_in)
+    Master(std::string slave_ip_in, int slave_id_in)
     {
-        ip = ip_in;
+        slave_ip = slave_ip_in;
         slave_id = slave_id_in;
     }
 
@@ -32,7 +32,7 @@ class Master
             char buffer[MAXLINE];
             struct sockaddr_in   servaddr;
 
-            // Creating socket file descriptor
+            // Creating socket file descriptor 
             if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
                 perror("socket creation failed");
                 exit(EXIT_FAILURE);
@@ -43,7 +43,7 @@ class Master
             // Filling server information
             servaddr.sin_family = AF_INET;
             servaddr.sin_port = htons(PORT);
-            servaddr.sin_addr.s_addr = INADDR_ANY;
+            servaddr.sin_addr.s_addr = inet_addr(slave_ip.c_str());
 
             socklen_t len;
 
