@@ -4,16 +4,38 @@
 #include <string>
 #include <sstream>
 
+#include <unistd.h>
+
+class Result
+{
+    public:
+        int c;
+
+        std::string str()
+        {
+            std::stringstream ss;
+            ss << "c: "<<c<<std::endl;
+            return ss.str(); 
+        }
+};
+
 class Computable
 {
     public:
         int a;
         int b;
 
-        int compute()
+        // most importable, how we want to compute....
+        Result compute()
         {
-            int c = a + 100*b;
-            return c;
+            Result result;
+            for(int i = 0 ; i < 3 ; i++)
+            {
+                std::cout<<"Compute stage["<<(i+1)<<"]"<<std::endl;
+                result.c = a + 100*b;
+                sleep(3);   //simulate slow computation
+            }
+            return result;
         }
 
         std::string str()
@@ -24,9 +46,4 @@ class Computable
         }
 };
 
-class Result
-{
-    public:
-        int c;
-};
 #endif
